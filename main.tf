@@ -1,15 +1,15 @@
 terraform {
-    required_version = ">= 1.7"
-    required_providers {
-        aws = {
-            source  = "hashicorp/aws"
-            version = "~> 4.0"
-        }
-        vault = {
-            source  = "hashicorp/vault"
-            version = "~> 3.0"
-        }
+  required_version = ">= 1.7"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
     }
+    vault = {
+      source  = "hashicorp/vault"
+      version = "~> 3.0"
+    }
+  }
 }
 
 provider "vault" {
@@ -24,6 +24,11 @@ data "vault_kv_secret_v2" "aws_creds" {
 }
 
 provider "aws" {
-    region = "us-east-1"
+  region     = "us-east-1"
+  access_key = data.vault_kv_secret_v2.aws_creds.data["access_key"]
+  secret_key = data.vault_kv_secret_v2.aws_creds.data["secret_key"]
 }
 
+module "eks" {
+  source = "./eks"
+}

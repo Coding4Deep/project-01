@@ -4,3 +4,6 @@ terraform.tfvars
 vault/tls/vault.crt
 vault/tls/vault.key
 vault/vault.csr
+*.tfstate
+*.tfstate.backup
+kubectl.sha256
