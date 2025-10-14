@@ -7,4 +7,5 @@ vault/vault.csr
 vault/data/*
 *.tfstate
 *.tfstate*
-kubectl.sha256
+kubectl.sha256.terraform/
+*.tfstate*
