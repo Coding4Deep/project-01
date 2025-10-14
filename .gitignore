@@ -6,5 +6,5 @@ vault/tls/vault.key
 vault/vault.csr
 vault/data/*
 *.tfstate
-*.tfstate.backup
+*.tfstate*
 kubectl.sha256
