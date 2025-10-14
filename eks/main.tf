@@ -8,7 +8,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
-   subnet_ids = concat(module.vpc.private_subnet_ids, module.vpc.public_subnet_ids)
+    subnet_ids              = concat(module.vpc.private_subnet_ids, module.vpc.public_subnet_ids)
     endpoint_public_access  = true
     endpoint_private_access = true
     public_access_cidrs     = ["0.0.0.0/0"]

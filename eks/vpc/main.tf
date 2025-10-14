@@ -11,7 +11,7 @@
 # - VPC endpoints: S3 (gateway) + ECR API/DKR (interface)
 
 data "aws_availability_zones" "available" {
-state = "available"
+  state = "available"
 }
 
 locals {
@@ -23,7 +23,7 @@ resource "aws_vpc" "eks-vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags = merge(var.tags, { Name = "eks-vpc" })
+  tags                 = merge(var.tags, { Name = "eks-vpc" })
 }
 
 # Public subnets (for ALB, NAT gateways)
@@ -34,7 +34,7 @@ resource "aws_subnet" "public" {
   cidr_block              = each.value
   availability_zone       = local.azs[tonumber(each.key)]
   map_public_ip_on_launch = true
-  tags = merge(var.tags, { Name = "eks-public-${each.key}" })
+  tags                    = merge(var.tags, { Name = "eks-public-${each.key}" })
 }
 
 # Private subnets (for nodes / fargate)
@@ -44,7 +44,7 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.eks-vpc.id
   cidr_block        = each.value
   availability_zone = local.azs[tonumber(each.key)]
-  tags = merge(var.tags, { Name = "eks-private-${each.key}" })
+  tags              = merge(var.tags, { Name = "eks-private-${each.key}" })
 }
 
 
@@ -67,8 +67,8 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public_assoc" {
-  for_each      = aws_subnet.public
-  subnet_id     = each.value.id
+  for_each       = aws_subnet.public
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
 }
 
@@ -94,7 +94,7 @@ resource "aws_route_table" "private" {
   vpc_id   = aws_vpc.eks-vpc.id
 
   route {
-    cidr_block   = "0.0.0.0/0"
+    cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat[tonumber(each.key)].id
   }
 
@@ -109,8 +109,8 @@ resource "aws_route_table_association" "private_assoc" {
 
 # Security group for LoadBalancer (ALB/NLB)
 resource "aws_security_group" "alb_sg" {
-  name   = "eks-alb-sg"
-  vpc_id = aws_vpc.eks-vpc.id
+  name        = "eks-alb-sg"
+  vpc_id      = aws_vpc.eks-vpc.id
   description = "Allow HTTP/HTTPS from the world to ALB"
 
   ingress {
