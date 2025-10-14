@@ -31,15 +31,19 @@ terraform {
 # }
 
 provider "aws" {
-  region     = "us-east-1"
+  region = "us-east-1"
   # access_key = data.vault_kv_secret_v2.aws_creds.data["access_key"]
   # secret_key = data.vault_kv_secret_v2.aws_creds.data["secret_key"]
 }
 
-module "eks" {
-  source = "./eks"
-}
+# module "eks" {
+#   source = "./eks"
+# }
 
 # module "s3-backend" {
 #   source = "./s3"
 # }
+
+module "ec2" {
+  source = "./ec2"
+}
