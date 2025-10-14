@@ -180,7 +180,7 @@
         </plugins>
     </build>
 
-
+<!-- 
     <distributionManagement>
         <repository>
             <id>nexus</id>
@@ -190,6 +190,6 @@
             <id>nexus</id>
             <url>http://3.86.252.176:8081/repository/terraform_snapshot/</url>
         </snapshotRepository>
-    </distributionManagement> 
+    </distributionManagement>  -->
 
 </project>
