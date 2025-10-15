@@ -8,3 +8,4 @@ vault/data/*
 *.tfstate
 *.tfstate*
 kubectl.sha256
+aws_secrets.yaml
