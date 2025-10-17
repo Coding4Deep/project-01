@@ -22,6 +22,13 @@ resource "aws_instance" "servers" {
     module.sg.sg_id
   ]
 
+  # Custom root volume
+  root_block_device {
+    volume_size           = 50
+    volume_type           = "gp3"
+    delete_on_termination = true
+  }
+
   tags = {
     Name = each.key
     ENV  = var.env
