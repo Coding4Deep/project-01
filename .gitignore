@@ -1,10 +1,8 @@
-vault.secret
 .terraform
 terraform.tfvars
-vault/tls/vault.crt
-vault/tls/vault.key
-vault/vault.csr
-vault/data/*
+*.tfvars
 *.tfstate
 *.tfstate*
-kubectl.sha256
+
+
+

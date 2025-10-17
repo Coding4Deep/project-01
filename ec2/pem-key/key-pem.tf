@@ -31,6 +31,9 @@ resource "aws_key_pair" "aws_key" {
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
+output "key_name" {
+  value = aws_key_pair.aws_key.key_name  
+}
 
 output "pem_file_path" {
   value = abspath(local_file.private_key.filename)

@@ -3,21 +3,21 @@ resource "aws_vpc" "main" {
   cidr_block           = var.cidr_block
   enable_dns_hostnames = true
   tags = {
-    env = var.vpc_env
+    ENV = "dev"
     Name = var.vpc_name
   }
 }
 
 resource "aws_subnet" "public_subnet" {
 
-    vpc_id                  = aws_vpc.main.id
+  vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_cidrs
   map_public_ip_on_launch = true
   availability_zone       = var.availability_zones
 
   tags = {
     Name = "${var.vpc_name}-public-subnet"
-    env  = var.vpc_env
+    env  = "dev"
   }
 }
 

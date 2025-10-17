@@ -6,3 +6,11 @@
 #     subnet_id     = string
 #   }))
 # }
+
+
+variable "env" {
+  description = "Environment name"
+  type        = string
+  default     = "dev"
+  
+}
