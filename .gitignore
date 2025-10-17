@@ -1,11 +1,3 @@
 vault.secret
 .terraform
-terraform.tfvars
-vault/tls/vault.crt
-vault/tls/vault.key
-vault/vault.csr
-vault/data/*
-*.tfstate
-*.tfstate*
-kubectl.sha256
 aws_secrets.yaml

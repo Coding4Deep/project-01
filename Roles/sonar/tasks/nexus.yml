@@ -1,0 +1,65 @@
+- name: Create nexus user
+  user:
+    name: "{{ nexus_user }}"
+    system: yes
+    create_home: no
+    shell: /bin/bash
+
+- name: Download Nexus OSS
+  get_url:
+    url: "https://download.sonatype.com/nexus/3/nexus-{{ nexus_version }}-{{ linux_arch }}.tar.gz"
+    dest: "/tmp/nexus-{{ nexus_version }}.tar.gz"
+    mode: "0644"
+
+- name: Extract Nexus to temp directory
+  unarchive:
+    src: "/tmp/nexus-{{ nexus_version }}.tar.gz"
+    dest: "/opt/"
+    remote_src: yes
+    creates: "{{ nexus_install_dir }}-{{ nexus_version }}"
+
+- name: Move Nexus to /opt/nexus
+  command: mv {{ nexus_install_dir }}-{{ nexus_version }} /opt/nexus
+  args:
+    creates: "{{ nexus_install_dir }}"
+
+- name: Ensure sonatype-work directory ownership
+  file:
+    path: /opt/sonatype-work
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    state: directory
+    recurse: yes
+
+- name: Change ownership of Nexus installation
+  file:
+    path: "{{ nexus_install_dir }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    recurse: yes
+
+- name: Ensure nexus.rc exists
+  file:
+    path: /opt/nexus/bin/nexus.rc
+    state: touch
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+    mode: "0644"
+
+- name: Configure nexus to run as nexus user
+  lineinfile:
+    path: "{{ nexus_install_dir }}/bin/nexus.rc"
+    regexp: "^#?run_as_user="
+    line: "run_as_user={{ nexus_user }}"
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_group }}"
+
+- name: Deploy nexus systemd service
+  template:
+    src: nexus.service.j2
+    dest: /etc/systemd/system/nexus.service
+    mode: "0644"
+  notify: 
+    - Reload systemd
+    - Enable and start Nexus
+

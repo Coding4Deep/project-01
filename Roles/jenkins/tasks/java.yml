@@ -1,0 +1,20 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Ensure Java is installed 
+  ansible.builtin.apt:
+    name: openjdk-{{ java_version }}-jdk
+    state: present
+    install_recommends: yes
+    force: yes
+
+- name: Check Java version
+  ansible.builtin.command: java -version
+  register: java_version
+  ignore_errors: yes
+
+- name: Show Java version
+  debug:
+    var: java_version.stderr_lines

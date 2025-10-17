@@ -1,0 +1,41 @@
+- name: Install Java (Jenkins dependency)
+  import_tasks: java.yml
+
+
+- name: Install dependencies for apt over HTTPS
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - apt-transport-https
+    - ca-certificates
+    - gnupg
+    - curl
+
+- name: Add Jenkins GPG key
+  ansible.builtin.get_url:
+    url: "{{ jenkins_gpg_key_url }}"
+    dest: /usr/share/keyrings/jenkins-keyring.asc
+    mode: '0644'
+
+- name: Add Jenkins apt repository
+  ansible.builtin.apt_repository:
+    repo: "{{ jenkins_apt_repo }}"
+    state: present
+    filename: jenkins
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install Jenkins
+  ansible.builtin.apt:
+    name: jenkins
+    state: present
+
+- name: Ensure Jenkins service is started and enabled
+  ansible.builtin.service:
+    name: jenkins
+    state: started
+    enabled: yes

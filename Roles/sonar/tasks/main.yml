@@ -1,0 +1,22 @@
+---
+# -------------------------
+# Install dependencies
+# -------------------------
+- name: Install required packages
+  apt:
+    name:
+      - "{{ java_package }}"
+      - unzip
+      - wget
+      - curl
+      - git
+    state: present
+    update_cache: yes
+
+- name: Import SonarQube tasks
+  import_tasks: sonar.yml
+  tags: sonar_install
+
+- name: Import Nexus tasks
+  import_tasks: nexus.yml
+  tags: nexus_install

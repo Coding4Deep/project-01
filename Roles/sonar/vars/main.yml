@@ -1,0 +1,15 @@
+---
+java_package: openjdk-17-jdk
+java_home: /usr/lib/jvm/java-17-openjdk-amd64
+
+sonar_version: "25.10.0.114319" 
+sonar_user: "sonar"
+sonar_group: "sonar"
+sonar_install_dir: "/opt/sonarqube"
+sonar_service_name: "sonarqube"
+
+nexus_version: "3.85.0-03"
+nexus_user: "nexus"
+nexus_group: "nexus"
+nexus_install_dir: "/opt/nexus"
+linux_arch: "linux-x86_64"

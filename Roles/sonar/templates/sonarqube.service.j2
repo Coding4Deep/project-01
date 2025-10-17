@@ -1,0 +1,18 @@
+[Unit]
+Description=SonarQube service
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+Restart=always
+User={{ sonar_user }}
+Group={{ sonar_group }}
+LimitNOFILE=65536
+LimitNPROC=4096
+Environment=JAVA_HOME={{ java_home }}
+Environment=SONAR_HOME={{ sonar_install_dir }}
+
+[Install]
+WantedBy=multi-user.target

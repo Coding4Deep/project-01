@@ -1,6 +1,35 @@
 ---
 - name: Install and configure Jenkins
-  hosts: jenkins_master
+  hosts: 
+    - jenkins_master_01
+    - jenkins_master_02
   become: yes
   roles:
-    - jenkins
+    - Roles/jenkins
+
+- name: Change hostname for Jenkins master 1
+  hosts:
+    - jenkins_master_01
+  become: yes
+  tasks:
+    - name: Set hostname for jenkins_master_01
+      ansible.builtin.hostname:
+        name: master-01
+  tags:
+  - hostname
+
+- name: Change hostname for Jenkins master 2
+  hosts:
+    - jenkins_master_02
+  become: yes
+  tasks:
+    - name: Set hostname for jenkins_master_02
+      ansible.builtin.hostname:
+        name: master-02
+  tags:
+  - hostname
+
+
+
+
+    
