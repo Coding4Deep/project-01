@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'wsl-local' 
-    }
+    agent any
 
     parameters {
        string(name: 'TF_WORKSPACE', defaultValue: 'dev', description: 'Terraform workspace to use')
@@ -14,7 +12,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                git branch: 'terraform', url: 'git@github.com:Coding4Deep/project-01.git', credentialsId: 'github-ssh'
+                git branch: 'terraform', url: 'git@github.com:Coding4Deep/project-01.git'
             }
         }
         stage('Terraform Init') {
