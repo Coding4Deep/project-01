@@ -28,15 +28,15 @@ pipeline {
             steps {
                 script {
                     def workspaceName = params.TF_WORKSPACE
-                    def existingWorkspaces = sh(script: "terraform workspace list", returnStdout: true).trim()
-        
-                    if (existingWorkspaces.contains(workspaceName)) {
-                        echo "Workspace '${workspaceName}' exists. Selecting..."
-                        sh "terraform workspace select ${workspaceName}"
-                    } else {
-                        echo "Workspace '${workspaceName}' not found. Creating..."
-                        sh "terraform workspace new ${workspaceName}"
-                    }
+                    sh """
+                        if terraform workspace list | grep -q ${workspaceName}; then
+                            echo " Workspace '${workspaceName}' exists. Selecting..."
+                            terraform workspace select ${workspaceName}
+                        else
+                            echo " Workspace '${workspaceName}' not found. Creating..."
+                            terraform workspace new ${workspaceName}
+                        fi
+                    """
                 }
             }
         }
