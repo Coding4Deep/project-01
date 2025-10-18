@@ -7,7 +7,7 @@ pipeline {
        string(name: 'TF_WORKSPACE', defaultValue: 'dev', description: 'Terraform workspace to use')
     }
  
-    trigger {
+    triggers {
        githubPush()
     }
 
