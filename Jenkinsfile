@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                git branch: 'terraform', url: 'git@github.com:Coding4Deep/project-01.git'
+                git branch: 'terraform', url: 'git@github.com:Coding4Deep/project-01.git', credentialsId: 'github-ssh'
             }
         }
         stage('Terraform Init') {
