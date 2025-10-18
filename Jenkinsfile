@@ -5,8 +5,8 @@ pipeline {
        string(name: 'TF_WORKSPACE', defaultValue: 'dev', description: 'Terraform workspace to use')
     }
     environment {
-        AWS_ACCESS_KEY_ID = credentials('aws-creds')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-creds')
+        AWS_ACCESS_KEY_ID = credentials('awscreds')
+        AWS_SECRET_ACCESS_KEY = credentials('awscreds')
     }
     triggers {
        githubPush()
