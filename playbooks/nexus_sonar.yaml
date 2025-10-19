@@ -1,6 +1,6 @@
 ---
 - name: Install SonarQube and Nexus on a single server
-  hosts: sonar_slave   
+  hosts: sonar_nexus
   become: yes
   roles:
     - Roles/sonar
@@ -10,10 +10,10 @@
 
 - name: Change hostname for sonar server
   hosts:
-    - sonar_slave
+    - sonar_nexus
   become: yes
   tasks:
-    - name: Set hostname for sonar_slave
+    - name: Set hostname for sonar_nexus
       ansible.builtin.hostname:
         name: sonar
   tags:
