@@ -23,7 +23,7 @@ pipeline {
         }
         stage('changing jenkins server hostname') {
             steps {
-                sh 'ansible-playbook  playbook/jenkins.yaml --tags jen-hostname'
+                sh 'ansible-playbook  playbooks/jenkins.yaml --tags jen-hostname'
             }
         }
     }
