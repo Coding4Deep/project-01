@@ -2,7 +2,7 @@
   import_tasks: java.yml
 
 
-- name: Install dependencies for apt over HTTPS
+- name: Install dependencies for apt 
   apt:
     name: "{{ item }}"
     state: present
