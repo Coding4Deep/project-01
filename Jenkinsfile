@@ -21,16 +21,17 @@ pipeline {
                 ''' 
             }
         }
-        stage('changing jenkins server hostname') {
-            steps {
-                sh 'ansible-playbook  playbooks/jenkins.yaml --tags jen-hostname'
-            }
-        }
         stage('installing jenkins server') {
             steps {
-                sh 'ansible-playbook  playbooks/jenkins.yaml --tags jenkins_setup'
+                sh 'ansible-playbook  playbooks/nexus_sonar.yaml --tags hostname'
             }
         }
+        stage('changing jenkins server hostname') {
+            steps {
+                sh 'ansible-playbook  playbooks/nexus_sonar.yaml --tags sonar_nexus_install --skip-tags nexus_install'
+            }
+        }
+
     }
 }
 

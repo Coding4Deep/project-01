@@ -12,6 +12,8 @@
       - git
     state: present
     update_cache: yes
+  tags: 
+    - dependencies
 
 - name: Import SonarQube tasks
   import_tasks: sonar.yml

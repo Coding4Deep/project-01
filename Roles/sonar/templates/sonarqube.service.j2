@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 Type=forking
-ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
-ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+ExecStart={{ sonar_install_dir }}/bin/linux-x86-64/sonar.sh start
+ExecStop={{ sonar_install_dir }}/bin/linux-x86-64/sonar.sh stop
 Restart=always
 User={{ sonar_user }}
 Group={{ sonar_group }}

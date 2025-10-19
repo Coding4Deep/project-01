@@ -6,6 +6,7 @@
     - Roles/sonar
   tags:
     - sonar_nexus_install
+  
 
 - name: Change hostname for sonar server
   hosts:
