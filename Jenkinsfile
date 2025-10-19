@@ -51,5 +51,25 @@ pipeline {
                 }
             }
         }
+
+        stage('plan'){
+            steps{
+                sh '''
+                   terraform workspace list
+                '''
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
