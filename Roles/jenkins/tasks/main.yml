@@ -33,9 +33,14 @@
   ansible.builtin.apt:
     name: jenkins
     state: present
+  notify:
+    - Restart Daemon
 
 - name: Ensure Jenkins service is started and enabled
   ansible.builtin.service:
     name: jenkins
     state: started
     enabled: yes
+  notify:
+    - Restart Jenkins
+    
