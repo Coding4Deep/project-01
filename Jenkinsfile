@@ -1,9 +1,5 @@
 pipeline {
     agent any
-
-    parameters {
-       string(name: 'TF_WORKSPACE', defaultValue: 'dev', description: 'Terraform workspace to use')
-    }
     environment {
         AWS_ACCESS_KEY_ID = credentials('awscreds')
         AWS_SECRET_ACCESS_KEY = credentials('awscreds')
@@ -27,3 +23,4 @@ pipeline {
         }
     }
 }
+
