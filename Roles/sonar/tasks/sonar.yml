@@ -45,5 +45,7 @@
   template:
     src: sonarqube.service.j2
     dest: /etc/systemd/system/{{ sonar_service_name }}.service
-  notify: reload systemd
+  notify: 
+    - Reload systemd daemon
+    - Restart sonarqube
   tags: sonar-service

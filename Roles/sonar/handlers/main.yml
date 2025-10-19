@@ -1,19 +1,16 @@
 ---
-- name: reload systemd
-  systemd:
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
     daemon_reload: yes
 
-- name: start sonarqube
-  systemd:
+- name: Restart sonarqube
+  ansible.builtin.systemd:
     name: sonarqube
-    state: started
+    state: restarted
     enabled: yes
 
-- name: Reload systemd
-  command: systemctl daemon-reload
-
 - name: Enable and start Nexus
-  systemd:
+  ansible.builtin.systemd:
     name: nexus
     enabled: yes
     state: restarted
