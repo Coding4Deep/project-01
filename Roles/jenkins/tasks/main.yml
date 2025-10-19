@@ -34,7 +34,7 @@
     name: jenkins
     state: present
   notify:
-    - Restart Daemon
+    - Reload systemd daemon
 
 - name: Ensure Jenkins service is started and enabled
   ansible.builtin.service:
@@ -43,4 +43,4 @@
     enabled: yes
   notify:
     - Restart Jenkins
-    
+

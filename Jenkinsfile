@@ -26,6 +26,11 @@ pipeline {
                 sh 'ansible-playbook  playbooks/jenkins.yaml --tags jen-hostname'
             }
         }
+        stage('installing jenkins server') {
+            steps {
+                sh 'ansible-playbook  playbooks/jenkins.yaml --tags jenkins_setup'
+            }
+        }
     }
 }
 
