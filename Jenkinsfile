@@ -43,10 +43,10 @@ pipeline {
         
                     if (workspaces.contains(workspaceName)) {
                         echo "Workspace '${workspaceName}' exists. Selecting..."
-                        sh "terraform workspace select ${workspaceName}"
+                        sh "unset TF_WORKSPACE && terraform workspace select ${workspaceName}"
                     } else {
                         echo "Workspace '${workspaceName}' not found. Creating..."
-                        sh "terraform workspace new ${workspaceName}"
+                        sh "unset TF_WORKSPACE && terraform workspace new ${workspaceName}"
                     }
                 }
             }
