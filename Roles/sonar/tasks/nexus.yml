@@ -60,6 +60,6 @@
     dest: /etc/systemd/system/nexus.service
     mode: "0644"
   notify: 
-    - Reload systemd
+    - Reload systemd daemon
     - Enable and start Nexus
 
