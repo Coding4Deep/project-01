@@ -14,7 +14,7 @@ resource "aws_eks_cluster" "eks_cluster" {
     public_access_cidrs     = ["0.0.0.0/0"]
   }
 
-  version = "1.30"
+  version = var.k8s_version
 }
 
 # EKS Managed Node Group (EC2)

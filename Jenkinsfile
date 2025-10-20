@@ -10,9 +10,9 @@ pipeline {
         AWS_SECRET_ACCESS_KEY = credentials('awscreds')
     }
 
-    triggers {
-       githubPush()
-    }
+    // triggers {
+    //    githubPush()
+    // }
 
     stages {
         stage('Checkout') {

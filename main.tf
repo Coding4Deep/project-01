@@ -10,13 +10,13 @@ terraform {
     #   version = "~> 3.0"
     # }
   }
-  backend "s3" {
-    bucket         = "terraform-state-bucket-unique-123456"
-    key            = "global/s3/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-lock-table"
-    encrypt        = true
-  }
+  # backend "s3" {
+  #   bucket         = "terraform-state-bucket-unique-123456"
+  #   key            = "global/s3/terraform.tfstate"
+  #   region         = "us-east-1"
+  #   dynamodb_table = "terraform-lock-table"
+  #   encrypt        = true
+  # }
 }
 
 # provider "vault" {
@@ -31,14 +31,11 @@ terraform {
 # }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "ap-south-1"
   # access_key = data.vault_kv_secret_v2.aws_creds.data["access_key"]
   # secret_key = data.vault_kv_secret_v2.aws_creds.data["secret_key"]
 }
 
-# module "eks" {
-#   source = "./eks"
-# }
 
 # module "s3-backend" {
 #   source = "./s3"
@@ -47,3 +44,8 @@ provider "aws" {
 module "ec2" {
   source = "./ec2"
 }
+
+module "eks" {
+  source = "./eks"
+}
+
