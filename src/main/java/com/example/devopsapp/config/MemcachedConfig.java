@@ -8,8 +8,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -17,37 +15,17 @@ import java.io.IOException;
 @EnableCaching
 public class MemcachedConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(MemcachedConfig.class);
+    // Inject memcached host and port from application.properties
+    @Value("${memcached.host}")
+    private String memcachedHost;
 
-    // Inject memcached servers from application.properties
-    @Value("${memcached.servers}")
-    private String memcachedServers;
+    @Value("${memcached.port}")
+    private int memcachedPort;
 
     @Bean
     public MemcachedClient memcachedClient() throws IOException {
-        logger.info("Configuring Memcached client with servers: {}", memcachedServers);
-        
-        try {
-            // Parse the servers string (format: host:port)
-            String[] serverParts = memcachedServers.split(":");
-            String host = serverParts[0];
-            int port = serverParts.length > 1 ? Integer.parseInt(serverParts[1]) : 11211;
-            
-            logger.info("Connecting to Memcached at {}:{}", host, port);
-            
-            XMemcachedClient client = new XMemcachedClient(host, port);
-            
-            // Set connection timeout
-            client.setConnectTimeout(5000);
-            client.setOpTimeout(3000);
-            
-            logger.info("Memcached client configured successfully");
-            return client;
-            
-        } catch (Exception e) {
-            logger.error("Failed to configure Memcached client: {}", e.getMessage());
-            throw new IOException("Could not connect to Memcached server: " + memcachedServers, e);
-        }
+        // Use injected host and port instead of hardcoded values
+        return new XMemcachedClient(memcachedHost, memcachedPort);
     }
 
     @Bean

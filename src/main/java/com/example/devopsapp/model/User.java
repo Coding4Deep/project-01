@@ -15,11 +15,6 @@ public class User {
 
     private String password;
 
-    // Transient fields for admin views (not stored in database)
-    private transient int totalTasks;
-    private transient int pendingTasks;
-    private transient int completedTasks;
-
     public User() {
     }
 
@@ -54,30 +49,5 @@ public class User {
     }
 
     public void setPassword(String password) { this.password = password; }
-
-    // Transient field getters and setters
-    public int getTotalTasks() {
-        return totalTasks;
-    }
-
-    public void setTotalTasks(int totalTasks) {
-        this.totalTasks = totalTasks;
-    }
-
-    public int getPendingTasks() {
-        return pendingTasks;
-    }
-
-    public void setPendingTasks(int pendingTasks) {
-        this.pendingTasks = pendingTasks;
-    }
-
-    public int getCompletedTasks() {
-        return completedTasks;
-    }
-
-    public void setCompletedTasks(int completedTasks) {
-        this.completedTasks = completedTasks;
-    }
 
 }

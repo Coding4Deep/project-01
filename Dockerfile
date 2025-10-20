@@ -37,7 +37,7 @@ RUN addgroup -g ${GROUP_ID} ${GROUP_NAME} && \
     adduser -S -u ${USER_ID} -G ${GROUP_NAME} ${USER_NAME}
 
 # Copy app from builder
-COPY --from=build --chown=${USER_NAME}:${GROUP_NAME} /app/target/*.war app.war
+COPY --from=build --chown=${USER_NAME}:${GROUP_NAME} /app/target/*.jar app.jar
 
 USER ${USER_NAME}
 
@@ -52,4 +52,4 @@ EXPOSE 8080
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75.0"
 
 # Proper entrypoint (use sh -c to expand JAVA_OPTS)
-ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.war"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
