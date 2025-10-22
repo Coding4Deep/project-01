@@ -18,6 +18,7 @@ resource "aws_instance" "servers" {
   instance_type = each.value.instance_type
   subnet_id     = each.value.subnet_id
   key_name      = module.pem_key.key_name
+  
   security_groups = [
     module.sg.sg_id
   ]
