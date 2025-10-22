@@ -2,7 +2,7 @@
 variable "cluster_name" {
   description = "EKS cluster name"
   type        = string
-  default     = "my-eks-cluster"
+  default     = "jen-eks-cluster"
 }
 
 variable "node_instance_type" {

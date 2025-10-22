@@ -38,7 +38,6 @@ resource "aws_instance" "servers" {
 # Allocate one EIP per EC2 instance
 resource "aws_eip" "ec2_eip" {
   for_each = aws_instance.servers
-  vpc      = true
 
   tags = {
     Name = "${each.key}-eip"
