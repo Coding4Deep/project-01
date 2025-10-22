@@ -55,8 +55,8 @@ pipeline {
         stage('plan'){
             steps{
                 sh '''
-                  
-                   terraform destroy --auto-approve
+
+                   terraform apply --auto-approve
                 '''
             }
         }
