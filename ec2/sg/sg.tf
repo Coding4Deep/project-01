@@ -32,6 +32,11 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  #  IGNORE manual ingress/egress changes
+  lifecycle {
+    ignore_changes = [ingress, egress]
+  }
+  
   tags = {
     Name = var.sg_name
     Env  = "dev"

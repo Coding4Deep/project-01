@@ -12,7 +12,7 @@ variable "sg_name" {
 variable "allowed_ports" {
   description = "List of allowed ingress ports"
   type        = list(number)
-  default     = [22, 80, 8080, 9000, 8200, 8081]
+  default     = [22, 80, 8080, 9000, 8081]
 }
 
 

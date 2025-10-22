@@ -56,7 +56,7 @@ pipeline {
             steps{
                 sh '''
                 terraform plan
-                terraform destroy --auto-approve
+                terraform apply --auto-approve
                 '''
             }
         }
