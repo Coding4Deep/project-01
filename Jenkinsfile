@@ -3,7 +3,6 @@ pipeline {
     environment {
         AWS_ACCESS_KEY_ID = credentials('awscreds')
         AWS_SECRET_ACCESS_KEY = credentials('awscreds')
-        SONAR_HOST_URL = 'http://34.207.227.231:9000/'
     }
     triggers {
        githubPush()
@@ -22,33 +21,45 @@ pipeline {
                 ''' 
             }
         }
-        // stage('installing jenkins server') {
-        //     steps {
-        //         sh 'ansible-playbook  playbooks/nexus_sonar.yaml --tags hostname'
-        //     }
-        // }
-        // stage('Check & Install SonarQube') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 def statusCode = sh(
-        //                     script: 'curl -o /dev/null -s -w "%{http_code}\\n" ${SONAR_HOST_URL}',
-        //                     returnStdout: true
-        //                 ).trim()
+        stage('installing jenkins server') {
+            steps {
+                sh 'ansible-playbook  playbooks/nexus_sonar.yaml --tags hostname'
+            }
+        }
+
+          stage('Check & Install SonarQube') {
+            steps {
+                script {
+                    // 🔹 Fetch EC2 Public IP dynamically using Ansible metadata
+                    def sonar_ip = sh(
+                        script: "ansible  all -m shell -a 'curl -s http://169.254.169.254/latest/meta-data/public-ipv4' | grep -oE '\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b' | head -n1",
+                        returnStdout: true
+                    ).trim()
         
-        //                 if (statusCode != "200") {
-        //                     echo "SonarQube not available. Installing..."
-        //                     sh 'ansible-playbook playbooks/nexus_sonar.yaml --tags sonar_nexus_install --skip-tags nexus_install'
-        //                 } else {
-        //                     echo "SonarQube is already up."
-        //                 }
-        //             } catch (err) {
-        //                 echo "Error reaching SonarQube. Proceeding with installation..."
-        //                 sh 'ansible-playbook playbooks/nexus_sonar.yaml --tags sonar_nexus_install --skip-tags nexus_install'
-        //             }
-        //         }
-        //     }
-        // }
+                    echo "Detected SonarQube public IP: ${sonar_ip}"
+        
+                    // // 🔹 Construct the Sonar URL
+                    // def SONAR_HOST_URL = "http://${sonar_ip}:9000"
+        
+                    // // 🔹 Check if SonarQube is reachable
+                    // def statusCode = sh(
+                    //     script: "curl -o /dev/null -s -w '%{http_code}' ${SONAR_HOST_URL}",
+                    //     returnStdout: true
+                    // ).trim()
+        
+                    // echo "SonarQube HTTP Status: ${statusCode}"
+        
+                    // // 🔹 Conditional logic
+                    // if (statusCode != "200") {
+                    //     echo "SonarQube not available. Installing..."
+                    //     sh "ansible-playbook playbooks/nexus_sonar.yaml --tags sonar_nexus_install --skip-tags nexus_install"
+                    // } else {
+                    //     echo "SonarQube is already up and reachable."
+                    // }
+                }
+            }
+        }
+        
         
         // stage('changing jenkins server hostname') {
         //     steps {
