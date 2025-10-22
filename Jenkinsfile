@@ -30,29 +30,25 @@ pipeline {
           stage('Check & Install SonarQube') {
             steps {
                 script {
-                    // 🔹 Fetch EC2 Public IP dynamically using Ansible metadata
-                    def sonar_ip = sh(
-                        script: "ansible  all -m shell -a 'curl -s http://169.254.169.254/latest/meta-data/public-ipv4' | grep -oE '\\b([0-9]{1,3}\\.){3}[0-9]{1,3}\\b' | head -n1",
+                    // Fetch public IP (ansible_host) from dynamic inventory
+                    def public_ip = sh(
+                        script: "ansible-inventory -i inventory/aws_ec2.yaml --host ec2-52-54-212-61.compute-1.amazonaws.com | jq -r .ansible_host",
                         returnStdout: true
                     ).trim()
-        
-                    echo "Detected SonarQube public IP: ${sonar_ip}"
-        
-                    // // 🔹 Construct the Sonar URL
-                    // def SONAR_HOST_URL = "http://${sonar_ip}:9000"
-        
-                    // // 🔹 Check if SonarQube is reachable
+                
+                    echo "Detected SonarQube public IP: ${public_ip}"
+                
+                    def SONAR_HOST_URL = "http://${public_ip}:9000"
+                    echo "Checking SonarQube at: ${SONAR_HOST_URL}"
+                
                     // def statusCode = sh(
                     //     script: "curl -o /dev/null -s -w '%{http_code}' ${SONAR_HOST_URL}",
                     //     returnStdout: true
                     // ).trim()
-        
-                    // echo "SonarQube HTTP Status: ${statusCode}"
-        
-                    // // 🔹 Conditional logic
+                
                     // if (statusCode != "200") {
                     //     echo "SonarQube not available. Installing..."
-                    //     sh "ansible-playbook playbooks/nexus_sonar.yaml --tags sonar_nexus_install --skip-tags nexus_install"
+                    //     sh 'ansible-playbook playbooks/nexus_sonar.yaml --tags sonar_nexus_install --skip-tags nexus_install'
                     // } else {
                     //     echo "SonarQube is already up and reachable."
                     // }
@@ -69,4 +65,9 @@ pipeline {
 
     }
 }
+
+
+
+
+
 
