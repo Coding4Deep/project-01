@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chat-service-config
+data:
+  MONGODB_URI: "mongodb://mongodb:27017/chatdb"
+  REDIS_URL: "redis://redis:6379"
+  KAFKA_BROKERS: "kafka:29092"
+  USER_SERVICE_URL: "http://user-service.user-service.svc.cluster.local:8080"
+  PORT: "3001"

@@ -40,11 +40,11 @@ spec:
               key: postgre-password
         resources:
           requests:
-            cpu: "250m"
-            memory: "512Mi"
+            cpu: "1500m"
+            memory: "1500Mi"
           limits:
-            cpu: "500m"
-            memory: "1Gi"
+            cpu: "2000m"
+            memory: "2Gi"
         livenessProbe:
           tcpSocket:
             port: 8080
