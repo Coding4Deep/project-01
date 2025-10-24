@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Docker registry credentials IDs stored in Jenkins
-        DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
-        AWS_CREDENTIALS = 'aws-creds'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')  
+        AWS_CREDENTIALS = credentials('aws-creds')
         ECR_REPO = '123456789012.dkr.ecr.us-east-1.amazonaws.com/user-service'
         DOCKER_REPO ="deepaksag/webchat-app"
         IMAGE_NAME = 'user-service'
