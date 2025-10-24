@@ -9,6 +9,7 @@ pipeline {
         AWS_ACCESS_KEY_ID = credentials('awscreds')
         AWS_SECRET_ACCESS_KEY = credentials('awscreds')
         AWS_REGION = 'us-east-1'
+        CI = 'false'
     }
     
     tools {
@@ -63,7 +64,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 dir('microservice-web-chat/frontend') {
-                    sh 'npm run build'
+                    sh 'CI=false npm run build'
                 }
             }
         }
