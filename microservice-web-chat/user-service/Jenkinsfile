@@ -24,14 +24,13 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Coding4Deep/microservice-web-chat.git'
+                git branch: 'main', url: 'https://github.com/Coding4Deep/project-01.git'
             }
         }
 
         stage('Run Unit Tests') {
             steps {
                 dir('user-service') {
-                    echo "Running JUnit tests..."
                     sh 'mvn clean test'
                 }
                 post {

@@ -160,3 +160,4 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.valid").value(false));
     }
 }
+// Fixed compilation errors
