@@ -20,31 +20,26 @@ pipeline {
 
         stage('Run Unit Tests') {
             steps {
-                dir('user-service') {
-                    echo "Running JUnit tests..."
-                    sh 'mvn clean test'
+                echo "Running JUnit tests..."
+                sh 'mvn clean test'
                 }
-                post {
-                    always {
-                        junit '**/target/surefire-reports/*.xml' // Publish JUnit reports
-                    }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml' // Publish JUnit reports
                 }
             }
         }
         stage('JaCoCo Coverage') {
             steps {
-                dir('user-service') {
-                    sh 'mvn jacoco:report'
-                    archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
-                }
+                sh 'mvn jacoco:report'
+                archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
+                
             }
         }
         stage('SonarQube Analysis') {
-            steps {
-                dir('user-service') {
-                    withSonarQubeEnv('MySonarQube') {
-                        sh "mvn sonar:sonar"
-                    }
+            steps { 
+                withSonarQubeEnv('MySonarQube') {
+                    sh "mvn sonar:sonar"
                 }
             }
         }
@@ -64,10 +59,8 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir('user-service') {
-                    echo "Building Docker image..."
-                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
-                }
+                echo "Building Docker image..."
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
             }
         }
 
