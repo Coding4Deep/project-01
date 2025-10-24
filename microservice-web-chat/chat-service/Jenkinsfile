@@ -1,8 +1,10 @@
 @Library('webchat-shared-library') _
 
-buildNodeService([
+buildService([
     serviceName: 'chat-service',
     servicePath: 'microservice-web-chat/chat-service',
+    techStack: 'nodejs',
+    nodeVersion: 'NodeJS-18',
     imageTag: 'chat-v1.0.0',
     dockerRepo: 'deepaksag/webchat-app',
     ecrRepoName: 'webchat-app/chat-service',
@@ -10,7 +12,6 @@ buildNodeService([
     awsRegion: 'us-east-1',
     gitUrl: 'https://github.com/Coding4Deep/project-01.git',
     gitBranch: 'spring',
-    nodeVersion: 'NodeJS-18',
     runTests: true,
     enableSonar: true,
     pushToDockerHub: true,

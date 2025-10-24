@@ -1,8 +1,10 @@
 @Library('webchat-shared-library') _
 
-buildFrontend([
+buildService([
     serviceName: 'frontend',
     servicePath: 'microservice-web-chat/frontend',
+    techStack: 'nodejs',
+    nodeVersion: 'NodeJS-18',
     imageTag: 'frontend-v1.0.0',
     dockerRepo: 'deepaksag/webchat-app',
     ecrRepoName: 'webchat-app/frontend',
@@ -10,8 +12,8 @@ buildFrontend([
     awsRegion: 'us-east-1',
     gitUrl: 'https://github.com/Coding4Deep/project-01.git',
     gitBranch: 'spring',
-    nodeVersion: 'NodeJS-18',
     runTests: true,
+    buildApp: true,
     enableSonar: true,
     pushToDockerHub: true,
     pushToECR: true

@@ -1,8 +1,9 @@
 @Library('webchat-shared-library') _
 
-buildMicroservice([
+buildService([
     serviceName: 'monitoring-service',
     servicePath: 'microservice-web-chat/monitoring-service',
+    techStack: 'java',
     imageTag: 'monitoring-v1.0.0',
     dockerRepo: 'deepaksag/webchat-app',
     ecrRepoName: 'webchat-app/monitoring-service',

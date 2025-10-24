@@ -1,8 +1,9 @@
 @Library('webchat-shared-library') _
 
-buildPythonService([
+buildService([
     serviceName: 'profile-service',
     servicePath: 'microservice-web-chat/profile-service',
+    techStack: 'python',
     imageTag: 'profile-v1.0.0',
     dockerRepo: 'deepaksag/webchat-app',
     ecrRepoName: 'webchat-app/profile-service',

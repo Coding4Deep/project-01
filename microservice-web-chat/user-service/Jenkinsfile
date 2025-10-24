@@ -1,8 +1,9 @@
 @Library('webchat-shared-library') _
 
-buildMicroservice([
+buildService([
     serviceName: 'user-service',
     servicePath: 'microservice-web-chat/user-service',
+    techStack: 'java',
     imageTag: 'user-v1.0.0',
     dockerRepo: 'deepaksag/webchat-app',
     ecrRepoName: 'webchat-app/user-service',
@@ -12,5 +13,5 @@ buildMicroservice([
     gitBranch: 'spring',
     enableSonar: true,
     pushToDockerHub: true,
-    pushToECR: false
+    pushToECR: true
 ])
