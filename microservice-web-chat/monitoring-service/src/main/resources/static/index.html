@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Microservices Monitoring</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status-running { color: #28a745; }
+        .status-down { color: #dc3545; }
+        .status-unhealthy { color: #ffc107; }
+        .alert-critical { background: #f8d7da; border-left: 4px solid #dc3545; }
+        .alert-high { background: #fff3cd; border-left: 4px solid #ffc107; }
+        .alert-medium { background: #d1ecf1; border-left: 4px solid #17a2b8; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .metric { display: inline-block; margin: 10px; padding: 10px; background: #e9ecef; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        .refresh-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chat Microservices Monitoring Dashboard</h1>
+        <button class="refresh-btn" onclick="loadData()">Refresh</button>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>System Metrics</h2>
+                <div id="system-metrics">Loading...</div>
+            </div>
+            
+            <div class="card">
+                <h2>Active Alerts</h2>
+                <div id="alerts">Loading...</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Services Status</h2>
+            <div id="services">Loading...</div>
+        </div>
+        
+        <div class="card">
+            <h2>Databases Status</h2>
+            <div id="databases">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        function loadData() {
+            loadSystemMetrics();
+            loadServices();
+            loadDatabases();
+            loadAlerts();
+        }
+        
+        function loadSystemMetrics() {
+            fetch('/monitoring/metrics')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('system-metrics').innerHTML = `
+                        <div class="metric">CPU: ${data.cpuUsage.toFixed(1)}%</div>
+                        <div class="metric">Memory: ${data.memoryUsage.toFixed(1)}%</div>
+                        <div class="metric">Disk: ${data.diskUsage.toFixed(1)}%</div>
+                        <div class="metric">Free Memory: ${(data.freeMemory / 1024 / 1024).toFixed(0)} MB</div>
+                    `;
+                });
+        }
+        
+        function loadServices() {
+            fetch('/monitoring/services')
+                .then(response => response.json())
+                .then(data => {
+                    let html = `<p>Running: ${data.running}/${data.total}</p><table><tr><th>Service</th><th>Status</th><th>Port</th><th>CPU</th><th>Memory</th><th>Database</th></tr>`;
+                    data.services.forEach(service => {
+                        html += `<tr>
+                            <td>${service.name}</td>
+                            <td class="status-${service.status.toLowerCase()}">${service.status}</td>
+                            <td>${service.port}</td>
+                            <td>${service.cpuUsage.toFixed(1)}%</td>
+                            <td>${service.memoryUsage.toFixed(1)}%</td>
+                            <td>${service.database}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('services').innerHTML = html;
+                });
+        }
+        
+        function loadDatabases() {
+            fetch('/monitoring/databases')
+                .then(response => response.json())
+                .then(data => {
+                    let html = '<table><tr><th>Database</th><th>Status</th><th>Version</th><th>Connected Services</th></tr>';
+                    Object.entries(data).forEach(([name, db]) => {
+                        html += `<tr>
+                            <td>${name}</td>
+                            <td class="status-${db.status.toLowerCase()}">${db.status}</td>
+                            <td>${db.version}</td>
+                            <td>${db.connectedServices.join(', ')}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    document.getElementById('databases').innerHTML = html;
+                });
+        }
+        
+        function loadAlerts() {
+            fetch('/monitoring/alerts')
+                .then(response => response.json())
+                .then(data => {
+                    let html = `<p>Total: ${data.total} (Critical: ${data.critical}, High: ${data.high}, Medium: ${data.medium})</p>`;
+                    if (data.alerts.length === 0) {
+                        html += '<p>No active alerts</p>';
+                    } else {
+                        data.alerts.forEach(alert => {
+                            html += `<div class="alert-${alert.severity.toLowerCase()}" style="margin: 5px 0; padding: 10px;">
+                                <strong>${alert.severity}</strong>: ${alert.message}
+                                <small style="float: right;">${new Date(alert.timestamp).toLocaleString()}</small>
+                            </div>`;
+                        });
+                    }
+                    document.getElementById('alerts').innerHTML = html;
+                });
+        }
+        
+        // Load data on page load and refresh every 30 seconds
+        loadData();
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

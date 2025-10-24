@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/userdb}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    cors:
+      allowed-origins: "http://localhost:3000"
+
+jwt:
+  secret: mySecretKey123456789012345678901234567890
+  expiration: 86400000
+
+server:
+  port: 8080

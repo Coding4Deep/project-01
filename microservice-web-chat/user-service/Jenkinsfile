@@ -1,0 +1,106 @@
+pipeline {
+    agent any
+
+    environment {
+        // Docker registry credentials IDs stored in Jenkins
+        DOCKERHUB_CREDENTIALS = 'dockerhub-creds'
+        AWS_CREDENTIALS = 'aws-creds'
+        ECR_REPO = '123456789012.dkr.ecr.us-east-1.amazonaws.com/web-chat-user-service'
+        IMAGE_NAME = 'web-chat-user-service'
+        IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Coding4Deep/microservice-web-chat.git'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                dir('user-service') {
+                    echo "Running JUnit tests..."
+                    sh 'mvn clean test'
+                }
+                post {
+                    always {
+                        junit '**/target/surefire-reports/*.xml' // Publish JUnit reports
+                    }
+                }
+            }
+        }
+        stage('JaCoCo Coverage') {
+            steps {
+                dir('user-service') {
+                    sh 'mvn jacoco:report'
+                    archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                dir('user-service') {
+                    withSonarQubeEnv('MySonarQube') {
+                        sh "mvn sonar:sonar"
+                    }
+                }
+            }
+        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         dir('user-service') {
+        //             sh """
+        //                 mvn sonar:sonar \
+        //                     -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+        //                     -Dsonar.host.url=${SONAR_HOST_URL} \
+        //                     -Dsonar.login=${SONAR_LOGIN}
+        //             """
+        //         }
+                
+        //     }
+        // }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('user-service') {
+                    echo "Building Docker image..."
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
+            }
+        }
+
+    //     stage('Push Docker Image to AWS ECR') {
+    //         steps {
+    //             echo "Pushing Docker image to AWS ECR..."
+    //             withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${AWS_CREDENTIALS}"]]) {
+    //                 sh """
+    //                     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ECR_REPO}
+    //                     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
+    //                     docker push ${ECR_REPO}:${IMAGE_TAG}
+    //                 """
+    //             }
+    //         }
+    //     }
+
+    //     stage('Push Docker Image to Docker Hub') {
+    //         steps {
+    //             echo "Pushing Docker image to Docker Hub..."
+    //             withDockerRegistry(credentialsId: "${DOCKERHUB_CREDENTIALS}", url: '') {
+    //                 sh """
+    //                     docker tag ${IMAGE_NAME}:${IMAGE_TAG} your-dockerhub-username/${IMAGE_NAME}:${IMAGE_TAG}
+    //                     docker push your-dockerhub-username/${IMAGE_NAME}:${IMAGE_TAG}
+    //                 """
+    //             }
+    //         }
+    //     }
+    }
+
+    post {
+        always {
+            echo "Cleaning up Docker images..."
+            sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
+        }
+    }
+}
