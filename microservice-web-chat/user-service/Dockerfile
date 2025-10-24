@@ -7,7 +7,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Use a valid OpenJDK image tag
-FROM openjdk:17-slim
+FROM openjdk:17-jdk-slim
 
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 WORKDIR /app
