@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Coding4Deep/project-01.git'
+                git branch: 'spring', url: 'https://github.com/Coding4Deep/project-01.git'
             }
         }
 
