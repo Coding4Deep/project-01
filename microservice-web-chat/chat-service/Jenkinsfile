@@ -68,15 +68,16 @@ pipeline {
                         try {
                             withSonarQubeEnv('MySonarQube') {
                                 sh """
-                                    sonar-scanner \
+                                    \${SONAR_SCANNER_HOME}/bin/sonar-scanner \
                                     -Dsonar.projectKey=webchat-chat-service \
                                     -Dsonar.projectName="WebChat Chat Service" \
                                     -Dsonar.projectVersion=1.0.0 \
                                     -Dsonar.sources=. \
                                     -Dsonar.exclusions=node_modules/**,coverage/**,test/** \
-                                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info || echo 'SonarQube analysis completed with warnings'
+                                    -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
                                 """
                             }
+                            echo "SonarQube analysis completed successfully"
                         } catch (Exception e) {
                             echo "SonarQube analysis failed: ${e.getMessage()}"
                             echo "Continuing pipeline without SonarQube analysis"
@@ -115,19 +116,19 @@ pipeline {
             }
         }
 
-        // stage('Push Docker Image to AWS ECR') {
-        //     steps {
-        //         dir('microservice-web-chat/chat-service') {
-        //             withAWS(credentials: 'awscreds', region: "${AWS_REGION}") {
-        //                 sh """
-        //                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 286549082566.dkr.ecr.us-east-1.amazonaws.com
-        //                     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
-        //                     docker push ${ECR_REPO}:${IMAGE_TAG}
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Push Docker Image to AWS ECR') {
+            steps {
+                dir('microservice-web-chat/chat-service') {
+                    withAWS(credentials: 'awscreds', region: "${AWS_REGION}") {
+                        sh """
+                            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 286549082566.dkr.ecr.us-east-1.amazonaws.com
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
+                            docker push ${ECR_REPO}:${IMAGE_TAG}
+                        """
+                    }
+                }
+            }
+        }
     }
 
     post {
