@@ -90,16 +90,17 @@ pipeline {
                                 usernameVariable: 'DOCKERHUB_USERNAME', 
                                 passwordVariable: 'DOCKERHUB_PASSWORD'
                             )
-                        ]) {
-                             sh """
-                                echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-                                docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REPO}:${IMAGE_TAG}
-                                docker push ${DOCKER_REPO}:${IMAGE_TAG}
-                            """
-                        }
+                    ]) {
+                        sh """
+                            echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REPO}:${IMAGE_TAG}
+                            docker push ${DOCKER_REPO}:${IMAGE_TAG}
+                        """
+                    }
                 }       
             }
         }
+    }
 
         // stage('Push Docker Image to AWS ECR') {
         //     steps {
@@ -114,10 +115,8 @@ pipeline {
         //         }
         //     }
         // }
-    }
-
     post {
-        SUCCESS {
+        success {
             emailext(
                 subject: "Jenkins Build Notification: ${currentBuild.fullDisplayName} - ${currentBuild.currentResult}",
                 body: """
@@ -141,38 +140,36 @@ pipeline {
                 to: "sagardeepak2002@gmail.com"
             )
         }
-    }
-
-    always {
-        script {
-            // Determine color and emoji based on build result
-            def color = 'good'
-            def emoji = ':white_check_mark:'
-            
-            if (currentBuild.currentResult == 'FAILURE') {
-                color = 'danger'
-                emoji = ':x:'
-            } else if (currentBuild.currentResult == 'UNSTABLE') {
-                color = 'warning'
-                emoji = ':warning:'
+    
+        always {
+            script {
+                def color = 'good'
+                def emoji = ':white_check_mark:'
+                
+                if (currentBuild.currentResult == 'FAILURE') {
+                    color = 'danger'
+                    emoji = ':x:'
+                } else if (currentBuild.currentResult == 'UNSTABLE') {
+                    color = 'warning'
+                    emoji = ':warning:'
+                }
+    
+                def slackMessage = """${emoji} *Build Notification*
+    *Job:* ${env.JOB_NAME}
+    *Build Number:* ${env.BUILD_NUMBER}
+    *Status:* ${currentBuild.currentResult}
+    *Triggered By:* ${currentBuild.getBuildCauses()[0].shortDescription}
+    *Build URL:* ${env.BUILD_URL}
+    """
+    
+                slackSend(
+                    channel: '#jenkins',
+                    color: color,
+                    message: slackMessage,
+                    tokenCredentialId: 'slack-webhook'
+                )
             }
-
-            // Build the Slack message dynamically
-            def slackMessage = """${emoji} *Build Notification*
-                *Job:* ${env.JOB_NAME}
-                *Build Number:* ${env.BUILD_NUMBER}
-                *Status:* ${currentBuild.currentResult}
-                *Triggered By:* ${currentBuild.getBuildCauses()[0].shortDescription}
-                *Build URL:* ${env.BUILD_URL}
-                """
-
-            // Send Slack message using Secret Text credential
-            slackSend(
-                channel: '#jenkins',
-                color: color,
-                message: slackMessage,
-                tokenCredentialId: 'slack-webhook'
-            )
         }
     }
+
 }
