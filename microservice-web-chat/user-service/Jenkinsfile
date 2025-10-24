@@ -2,10 +2,7 @@ pipeline {
     agent any
 
     environment {
-        // Docker registry credentials IDs stored in Jenkins
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')  
-        AWS_CREDENTIALS = credentials('aws-creds')
-        ECR_REPO = '123456789012.dkr.ecr.us-east-1.amazonaws.com/user-service'
+        ECR_REPO = ''
         DOCKER_REPO ="deepaksag/webchat-app"
         IMAGE_NAME = 'user-service'
         IMAGE_TAG = "v1.0.0"
@@ -86,7 +83,7 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 echo "Pushing Docker image to Docker Hub..."
-                withDockerRegistry(credentialsId: "${DOCKERHUB_CREDENTIALS}", url: 'https://index.docker.io/v1/') {
+                withDockerRegistry(credentialsId: 'dockerhub-creds' , url: 'https://index.docker.io/v1/') {
                     sh """
                         docker tag ${IMAGE_NAME}:${IMAGE_TAG} deepaksag/${IMAGE_NAME}:${IMAGE_TAG}
                         docker push deepaksag/${IMAGE_NAME}:${IMAGE_TAG}
