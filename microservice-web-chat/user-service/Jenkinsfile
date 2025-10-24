@@ -9,7 +9,6 @@ pipeline {
         IMAGE_NAME = 'web-chat-user-service'
         IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
     }
-
     tools {
         maven 'Maven3.9.11' 
     }
@@ -24,26 +23,31 @@ pipeline {
 
         stage('Run Unit Tests') {
             steps {
-                echo "Running JUnit tests..."
-                sh 'mvn clean test'
+                dir('user-service') {
+                    echo "Running JUnit tests..."
+                    sh 'mvn clean test'
                 }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml' // Publish JUnit reports
+                post {
+                    always {
+                        junit '**/target/surefire-reports/*.xml' // Publish JUnit reports
+                    }
                 }
             }
         }
         stage('JaCoCo Coverage') {
             steps {
-                sh 'mvn jacoco:report'
-                archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
-                
+                dir('user-service') {
+                    sh 'mvn jacoco:report'
+                    archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
+                }
             }
         }
         stage('SonarQube Analysis') {
-            steps { 
-                withSonarQubeEnv('MySonarQube') {
-                    sh "mvn sonar:sonar"
+            steps {
+                dir('user-service') {
+                    withSonarQubeEnv('MySonarQube') {
+                        sh "mvn sonar:sonar"
+                    }
                 }
             }
         }
@@ -63,8 +67,10 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo "Building Docker image..."
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                dir('user-service') {
+                    echo "Building Docker image..."
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
             }
         }
 
