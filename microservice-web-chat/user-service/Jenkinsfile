@@ -30,7 +30,7 @@ pipeline {
 
         stage('Run Unit Tests') {
             steps {
-                dir('user-service') {
+                dir('microservice-web-chat/user-service') {
                     sh 'mvn clean test'
                 }
                 post {
@@ -42,7 +42,7 @@ pipeline {
         }
         stage('JaCoCo Coverage') {
             steps {
-                dir('user-service') {
+                dir('microservice-web-chat/user-service') {
                     sh 'mvn jacoco:report'
                     archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
                 }
@@ -50,7 +50,7 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                dir('user-service') {
+                dir('microservice-web-chat/user-service') {
                     withSonarQubeEnv('MySonarQube') {
                         sh "mvn sonar:sonar"
                     }
@@ -73,7 +73,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                dir('user-service') {
+                dir('microservice-web-chat/user-service') {
                     echo "Building Docker image..."
                     sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                 }
@@ -108,8 +108,10 @@ pipeline {
 
     post {
         always {
-            echo "Cleaning up Docker images..."
-            sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
+            dir('microservice-web-chat/user-service') {
+               echo "Cleaning up Docker images..."
+               sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG} || true"
+            }
         }
     }
 }
