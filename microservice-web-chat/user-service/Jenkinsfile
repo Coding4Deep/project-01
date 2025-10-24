@@ -28,13 +28,15 @@ pipeline {
             }
         }
 
-        stage('Run Unit Tests') {
+         stage('Run Unit Tests') {
             steps {
                 dir('microservice-web-chat/user-service') {
                     sh 'mvn clean test'
                 }
-                post {
-                    always {
+            }
+            post {
+                always {
+                    dir('microservice-web-chat/user-service') {
                         junit '**/target/surefire-reports/*.xml' // Publish JUnit reports
                     }
                 }
