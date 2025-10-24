@@ -46,20 +46,8 @@ pipeline {
             post {
                 always {
                     dir('microservice-web-chat/frontend') {
-                        script {
-                            if (fileExists('coverage/lcov-report/index.html')) {
-                                publishHTML([
-                                    allowMissing: false,
-                                    alwaysLinkToLastBuild: true,
-                                    keepAll: true,
-                                    reportDir: 'coverage/lcov-report',
-                                    reportFiles: 'index.html',
-                                    reportName: 'Coverage Report'
-                                ])
-                            } else {
-                                echo 'Coverage report not found, skipping publish'
-                            }
-                        }
+                        echo 'Tests completed'
+                        archiveArtifacts artifacts: 'coverage/**/*', allowEmptyArchive: true
                     }
                 }
             }

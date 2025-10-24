@@ -19,21 +19,23 @@ global.fetch = jest.fn(() =>
   })
 );
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-global.localStorage = localStorageMock;
+// Mock localStorage safely
+Object.defineProperty(window, 'localStorage', {
+  value: {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+  },
+  writable: true,
+});
 
 // Mock window.alert
-global.alert = jest.fn();
+window.alert = jest.fn();
 
 beforeEach(() => {
   fetch.mockClear();
-  localStorageMock.getItem.mockClear();
-  localStorageMock.setItem.mockClear();
-  localStorageMock.removeItem.mockClear();
+  window.localStorage.getItem.mockClear();
+  window.localStorage.setItem.mockClear();
+  window.localStorage.removeItem.mockClear();
 });
