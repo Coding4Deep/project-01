@@ -101,28 +101,78 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to AWS ECR') {
-            steps {
-                dir('microservice-web-chat/user-service') {
-                    withAWS(credentials: 'awscreds', region: "${AWS_REGION}") {
-                        sh """
-                            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 286549082566.dkr.ecr.us-east-1.amazonaws.com
-                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
-                            docker push ${ECR_REPO}:${IMAGE_TAG}
-                        """
-                    }
-                }
-            }
-        }
-        
+        // stage('Push Docker Image to AWS ECR') {
+        //     steps {
+        //         dir('microservice-web-chat/user-service') {
+        //             withAWS(credentials: 'awscreds', region: "${AWS_REGION}") {
+        //                 sh """
+        //                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 286549082566.dkr.ecr.us-east-1.amazonaws.com
+        //                     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
+        //                     docker push ${ECR_REPO}:${IMAGE_TAG}
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     post {
-        always {
-            dir('microservice-web-chat/user-service') {
-               echo "Cleaning up Docker images..."
-               sh " docker image prune -af|| true"
+        SUCCESS {
+            emailext(
+                subject: "Jenkins Build Notification: ${currentBuild.fullDisplayName} - ${currentBuild.currentResult}",
+                body: """
+                    <html>
+                    <body>
+                        <h2 style="color: #2E86C1;">Jenkins Build Notification</h2>
+                        <p><strong>Job:</strong> ${env.JOB_NAME}</p>
+                        <p><strong>Build Number:</strong> ${env.BUILD_NUMBER}</p>
+                        <p><strong>Status:</strong> 
+                            <span style="color: ${currentBuild.currentResult == 'SUCCESS' ? 'green' : (currentBuild.currentResult == 'UNSTABLE' ? 'orange' : 'red')};">
+                                ${currentBuild.currentResult}
+                            </span>
+                        </p>
+                        <p>Check console output: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                        <hr>
+                        <p style="font-size: 12px; color: #7F8C8D;">This is an automated email from Jenkins.</p>
+                    </body>
+                    </html>
+                """,
+                mimeType: 'text/html',
+                to: "sagardeepak2002@gmail.com"
+            )
+        }
+    }
+
+    always {
+        script {
+            // Determine color and emoji based on build result
+            def color = 'good'
+            def emoji = ':white_check_mark:'
+            
+            if (currentBuild.currentResult == 'FAILURE') {
+                color = 'danger'
+                emoji = ':x:'
+            } else if (currentBuild.currentResult == 'UNSTABLE') {
+                color = 'warning'
+                emoji = ':warning:'
             }
+
+            // Build the Slack message dynamically
+            def slackMessage = """${emoji} *Build Notification*
+                *Job:* ${env.JOB_NAME}
+                *Build Number:* ${env.BUILD_NUMBER}
+                *Status:* ${currentBuild.currentResult}
+                *Triggered By:* ${currentBuild.getBuildCauses()[0].shortDescription}
+                *Build URL:* ${env.BUILD_URL}
+                """
+
+            // Send Slack message using Secret Text credential
+            slackSend(
+                channel: '#jenkins',
+                color: color,
+                message: slackMessage,
+                tokenCredentialId: 'slack-webhook'
+            )
         }
     }
 }
