@@ -1,17 +1,119 @@
-@Library('webchat-shared-library') _
+pipeline {
+    agent any
 
-buildService([
-    serviceName: 'user-service',
-    servicePath: 'microservice-web-chat/user-service',
-    techStack: 'java',
-    imageTag: 'user-v1.0.0',
-    dockerRepo: 'deepaksag/webchat-app',
-    ecrRepoName: 'webchat-app/user-service',
-    ecrAccountId: '286549082566',
-    awsRegion: 'us-east-1',
-    gitUrl: 'https://github.com/Coding4Deep/project-01.git',
-    gitBranch: 'spring',
-    enableSonar: true,
-    pushToDockerHub: true,
-    pushToECR: true
-])
+    environment {
+        ECR_REPO = '286549082566.dkr.ecr.us-east-1.amazonaws.com/webchat-app/user-service'
+        DOCKER_REPO = "deepaksag/webchat-app"
+        IMAGE_NAME = 'user-service'
+        IMAGE_TAG = "user-v1.0.0"
+        AWS_ACCESS_KEY_ID = credentials('awscreds')
+        AWS_SECRET_ACCESS_KEY = credentials('awscreds')
+        AWS_REGION = 'us-east-1'
+    }
+    
+    tools {
+        maven 'Maven3.9.11' 
+        jdk 'jdk17'
+    }
+
+    stages {
+        stage('Check Java') {
+            steps {
+                sh 'java -version'
+                sh 'echo $JAVA_HOME'
+            }
+        }
+        
+        stage('Checkout') {
+            steps {
+                git branch: 'spring', url: 'https://github.com/Coding4Deep/project-01.git'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                dir('microservice-web-chat/user-service') {
+                    sh 'mvn clean test'
+                }
+            }
+            post {
+                always {
+                    dir('microservice-web-chat/user-service') {
+                        junit '**/target/surefire-reports/*.xml'
+                    }
+                }
+            }
+        }
+        
+        stage('JaCoCo Coverage') {
+            steps {
+                dir('microservice-web-chat/user-service') {
+                    sh 'mvn jacoco:report'
+                    archiveArtifacts artifacts: 'target/site/jacoco/*', allowEmptyArchive: true
+                }
+            }
+        }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                dir('microservice-web-chat/user-service') {
+                    withSonarQubeEnv('MySonarQube') {
+                        sh "mvn sonar:sonar"
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir('microservice-web-chat/user-service') {
+                    echo "Building Docker image..."
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                dir('microservice-web-chat/user-service') {
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'docker-hub-credentials', 
+                            usernameVariable: 'DOCKERHUB_USERNAME', 
+                            passwordVariable: 'DOCKERHUB_PASSWORD'
+                        )
+                    ]) {
+                        sh """
+                            echo \$DOCKERHUB_PASSWORD | docker login -u \$DOCKERHUB_USERNAME --password-stdin
+                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REPO}:${IMAGE_TAG}
+                            docker push ${DOCKER_REPO}:${IMAGE_TAG}
+                        """
+                    }
+                }       
+            }
+        }
+
+        // stage('Push Docker Image to AWS ECR') {
+        //     steps {
+        //         dir('microservice-web-chat/user-service') {
+        //             withAWS(credentials: 'awscreds', region: "${AWS_REGION}") {
+        //                 sh """
+        //                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 286549082566.dkr.ecr.us-east-1.amazonaws.com
+        //                     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
+        //                     docker push ${ECR_REPO}:${IMAGE_TAG}
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
+    }
+
+    post {
+        always {
+            dir('microservice-web-chat/user-service') {
+               echo "Cleaning up Docker images..."
+               sh "docker image prune -af || true"
+            }
+        }
+    }
+}
