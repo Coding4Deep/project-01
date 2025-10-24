@@ -1,5 +1,5 @@
 # Multi-stage build
-FROM maven:3.9.4-openjdk-17 AS builder
+FROM maven:3.9-openjdk-17-slim AS builder
 WORKDIR /app
 COPY pom.xml . 
 RUN mvn dependency:go-offline -B
