@@ -1,5 +1,5 @@
 # Multi-stage build
-FROM maven:3.9.9-openjdk-17 AS builder
+FROM 3.9.11-eclipse-temurin-11-alpine AS builder
 WORKDIR /app
 COPY pom.xml . 
 RUN mvn dependency:go-offline -B
