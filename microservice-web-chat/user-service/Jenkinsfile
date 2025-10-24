@@ -16,6 +16,12 @@ pipeline {
 
     stages {
 
+        stage('Check Java') {
+            steps {
+                sh 'java -version'
+                sh 'echo $JAVA_HOME'
+            }
+        }
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Coding4Deep/microservice-web-chat.git'

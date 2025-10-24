@@ -82,7 +82,7 @@ class UserControllerTest {
         mockMvc.perform(post("/api/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpected(status().isBadRequest())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Username already exists"));
     }
 
@@ -93,7 +93,7 @@ class UserControllerTest {
         request.put("password", "password123");
 
         when(userService.authenticateUser(anyString(), anyString()))
-                .thenReturn(testUser);
+                .thenReturn(Optional.of(testUser));
         when(jwtUtil.generateToken(anyString()))
                 .thenReturn("mock-jwt-token");
 
@@ -113,56 +113,50 @@ class UserControllerTest {
         request.put("password", "wrongpassword");
 
         when(userService.authenticateUser(anyString(), anyString()))
-                .thenReturn(null);
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(post("/api/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("Invalid credentials"));
     }
 
     @Test
-    void getAllUsers_Success() throws Exception {
+    void getDashboard_Success() throws Exception {
         List<User> users = Arrays.asList(testUser);
         when(userService.getAllUsers()).thenReturn(users);
-
-        mockMvc.perform(get("/api/users")
-                .header("Authorization", "Bearer mock-token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].username").value("testuser"));
-    }
-
-    @Test
-    void getUserStats_Success() throws Exception {
         when(userService.getTotalUsers()).thenReturn(10L);
         when(userService.getActiveUsers()).thenReturn(8L);
 
-        mockMvc.perform(get("/api/users/stats")
+        mockMvc.perform(get("/api/users/dashboard")
                 .header("Authorization", "Bearer mock-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalUsers").value(10))
-                .andExpect(jsonPath("$.activeUsers").value(8));
+                .andExpect(jsonPath("$.activeUsers").value(8))
+                .andExpect(jsonPath("$.users").isArray());
     }
 
     @Test
-    void updateUserActivity_Success() throws Exception {
-        when(userService.updateUserActivity(anyString())).thenReturn(testUser);
+    void validateToken_Success() throws Exception {
+        when(jwtUtil.isTokenValid(anyString())).thenReturn(true);
+        when(jwtUtil.extractUsername(anyString())).thenReturn("testuser");
+        when(userService.getUserByUsername(anyString())).thenReturn(Optional.of(testUser));
 
-        mockMvc.perform(put("/api/users/testuser/activity")
+        mockMvc.perform(get("/api/users/validate")
                 .header("Authorization", "Bearer mock-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("User activity updated"));
+                .andExpect(jsonPath("$.valid").value(true))
+                .andExpect(jsonPath("$.username").value("testuser"));
     }
 
     @Test
-    void updateUserActivity_UserNotFound() throws Exception {
-        when(userService.updateUserActivity(anyString())).thenReturn(null);
+    void validateToken_Invalid() throws Exception {
+        when(jwtUtil.isTokenValid(anyString())).thenReturn(false);
 
-        mockMvc.perform(put("/api/users/nonexistent/activity")
-                .header("Authorization", "Bearer mock-token"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value("User not found"));
+        mockMvc.perform(get("/api/users/validate")
+                .header("Authorization", "Bearer invalid-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.valid").value(false));
     }
 }
