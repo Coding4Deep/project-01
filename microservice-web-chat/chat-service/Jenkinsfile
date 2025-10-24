@@ -67,7 +67,7 @@ pipeline {
                     script {
                         try {
                             withSonarQubeEnv('MySonarQube') {
-                                sh "sonar-scanner"
+                                sh "${tool 'SonarScanner'}/bin/sonar-scanner"
                             }
                         } catch (Exception e) {
                             echo "SonarQube analysis failed: ${e.getMessage()}"
