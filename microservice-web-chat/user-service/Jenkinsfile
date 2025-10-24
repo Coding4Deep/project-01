@@ -10,6 +10,10 @@ pipeline {
         IMAGE_TAG = "v1.0.${BUILD_NUMBER}"
     }
 
+    tools {
+        maven 'Maven-3.6.11' 
+    }
+
     stages {
 
         stage('Checkout') {
