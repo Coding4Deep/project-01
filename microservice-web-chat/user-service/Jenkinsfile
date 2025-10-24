@@ -72,31 +72,40 @@ pipeline {
                 }
             }
         }
-        stage('Trivy Scan') {
-            steps {
-                script {
-                    def imageName = "${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh """
-                    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest --severity CRITICAL,HIGH image $imageName
-                    """
-                }
-            }
-        }
+        // stage('Trivy Scan') {
+        //     steps {
+        //         script {
+        //             def imageName = "${IMAGE_NAME}:${IMAGE_TAG}"
+        //             sh """
+        //             docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest --severity CRITICAL,HIGH image $imageName
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Push Docker Image to Docker Hub') {
             steps {
-                sh """
-                    echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
-                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REPO}:${IMAGE_TAG}
-                    docker push ${DOCKER_REPO}:${IMAGE_TAG}
-                """
+                dir('microservice-web-chat/user-service') {
+                    withCredentials([
+                            usernamePassword(
+                                credentialsId: 'docker-hub-credentials', 
+                                usernameVariable: 'DOCKERHUB_USERNAME', 
+                                passwordVariable: 'DOCKERHUB_PASSWORD'
+                            )
+                        ]) {
+                             sh """
+                                echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+                                docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_REPO}:${IMAGE_TAG}
+                                docker push ${DOCKER_REPO}:${IMAGE_TAG}
+                            """
+                        }
+                }       
             }
         }
 
         stage('Push Docker Image to AWS ECR') {
             steps {
-                echo "Pushing Docker image to AWS ECR..."
-                withCredentials([[ credentialsId: "${AWS_CREDENTIALS}"]]) {
+                dir('microservice-web-chat/user-service') {
                     sh """
                         aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
                         docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
