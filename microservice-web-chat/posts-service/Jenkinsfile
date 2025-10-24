@@ -1,16 +1,17 @@
 @Library('webchat-shared-library') _
 
-buildMicroservice([
-    serviceName: 'user-service',
-    servicePath: 'microservice-web-chat/user-service',
-    imageTag: 'user-v1.0.0',
+buildGoService([
+    serviceName: 'posts-service',
+    servicePath: 'microservice-web-chat/posts-service',
+    imageTag: 'posts-v1.0.0',
     dockerRepo: 'deepaksag/webchat-app',
-    ecrRepoName: 'webchat-app/user-service',
+    ecrRepoName: 'webchat-app/posts-service',
     ecrAccountId: '286549082566',
     awsRegion: 'us-east-1',
     gitUrl: 'https://github.com/Coding4Deep/project-01.git',
     gitBranch: 'spring',
+    goVersion: 'Go-1.21',
     enableSonar: true,
     pushToDockerHub: true,
-    pushToECR: false
+    pushToECR: true
 ])
