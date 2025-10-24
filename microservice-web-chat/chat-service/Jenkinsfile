@@ -116,19 +116,19 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to AWS ECR') {
-            steps {
-                dir('microservice-web-chat/chat-service') {
-                    withAWS(credentials: 'awscreds', region: "${AWS_REGION}") {
-                        sh """
-                            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 286549082566.dkr.ecr.us-east-1.amazonaws.com
-                            docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
-                            docker push ${ECR_REPO}:${IMAGE_TAG}
-                        """
-                    }
-                }
-            }
-        }
+        // stage('Push Docker Image to AWS ECR') {
+        //     steps {
+        //         dir('microservice-web-chat/chat-service') {
+        //             withAWS(credentials: 'awscreds', region: "${AWS_REGION}") {
+        //                 sh """
+        //                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 286549082566.dkr.ecr.us-east-1.amazonaws.com
+        //                     docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO}:${IMAGE_TAG}
+        //                     docker push ${ECR_REPO}:${IMAGE_TAG}
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     post {
