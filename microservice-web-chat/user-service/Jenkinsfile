@@ -107,7 +107,7 @@ pipeline {
         always {
             dir('microservice-web-chat/user-service') {
                echo "Cleaning up Docker images..."
-               sh "docker rmi -af || true"
+               sh " docker image prune -af|| true"
             }
         }
     }
