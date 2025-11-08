@@ -31,7 +31,7 @@ resource "aws_eks_node_group" "eks_nodes" {
   }
 
   instance_types = [var.node_instance_type]
-  ami_type       = "AL2_x86_64"
+  ami_type       = "AL2023_x86_64_STANDARD"
   capacity_type  = "ON_DEMAND"
 }
 
@@ -54,3 +54,20 @@ resource "aws_eks_fargate_profile" "fargate_profile" {
 
 
 
+
+# EKS Add-ons
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "vpc-cni"
+}
+
+resource "aws_eks_addon" "coredns" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "coredns"
+  depends_on   = [aws_eks_node_group.eks_nodes]
+}
+
+resource "aws_eks_addon" "kube_proxy" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name   = "kube-proxy"
+}

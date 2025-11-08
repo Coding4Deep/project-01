@@ -75,7 +75,7 @@ resource "aws_route_table_association" "public_assoc" {
 # Elastic IPs for NAT Gateways (one per AZ/public subnet)
 resource "aws_eip" "nat" {
   count = var.enable_nat ? local.az_count : 0
-  vpc   = true
+  domain = "vpc"
   tags  = merge(var.tags, { Name = "eks-nat-eip-${count.index}" })
 }
 

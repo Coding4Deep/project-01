@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 6.0"
     }
     # vault = {
     #   source  = "hashicorp/vault"
@@ -41,9 +41,9 @@ provider "aws" {
 #   source = "./s3"
 # }
 
-module "ec2" {
-  source = "./ec2"
-}
+# module "ec2" {
+#   source = "./ec2"
+# }
 
 module "eks" {
   source = "./eks"

@@ -2,13 +2,13 @@
 variable "cluster_name" {
   description = "EKS cluster name"
   type        = string
-  default     = "jen-eks-cluster"
+  default     = "interview-eks"
 }
 
 variable "node_instance_type" {
   description = "EC2 instance type for node group"
   type        = string
-  default     = "t3.medium"
+  default     = "c7i-flex.large"
 }
 
 variable "node_desired_capacity" {
@@ -20,7 +20,7 @@ variable "node_desired_capacity" {
 variable "fargate_namespace" {
   description = "Kubernetes namespace for Fargate pods"
   type        = string
-  default     = "fargate-apps"
+  default     = "fargate"
 }
 
 variable "tags" {
@@ -34,5 +34,5 @@ variable "tags" {
 variable "k8s_version" {
   description = "EKS Kubernetes version"
   type        = string
-  default     = "1.30"
+  default     = "1.33"
 }
